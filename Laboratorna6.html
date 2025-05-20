@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>JS Гра</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div id="stats" class="d-flex justify-content-center align-items-center gap-4 mb-4">
+    <div id="timer" class="badge bg-warning text-dark fs-5 p-3 shadow-sm">
+      ⏱️ Залишилось: 00:30
+    </div>
+    <div id="level" class="badge bg-success text-white fs-5 p-3 shadow-sm">
+      📈 Рівень: 1
+    </div>
+  </div>
+  <div id="game" class="d-flex justify-content-center align-items-center gap-4 mb-4">
+    <table class="field"></table>
+  </div>
+</body>
+<script>
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+function getRandomFontSize() {
+    return getRandomInt(10, 31);
+}
+function createCells(arr, size, elem) {
+    elem.html(() => {
+        let content = '';
+        let e = 0;
+        for (let i = 0; i < size; i++) {
+            content += '<tr>';
+            for (let j = 0; j < size; j++) {
+                const fontSize = getRandomFontSize();
+                const fontColor = getRandomColor();
+                content += `<td style="font-size:${fontSize}pt; color:${fontColor}">${arr[e]}</td>`;
+                e++;
+            }
+            content += '</tr>';
+        }
+        return content;
+    });
+}
+function createArr(from, to) {
+    const arr = [];
+    for (let i = from; i <= to; i++) arr.push(i);
+    // простий shuffle
+    return arr.sort(() => Math.random() - 0.5);
+}
+
+const startSize = 3;
+const startLevel = 1;
+let level = startLevel;
+let size = startSize + level - 1;
+
+const BASE_LEVEL_TIME = 30;     
+const EXTRA_TIME_PER_LEVEL = 5;
+let timeLeft = 0;
+let timerInterval = null;
+
+function startLevelTimer(curLevel) {
+    timeLeft = BASE_LEVEL_TIME + (curLevel - 1) * EXTRA_TIME_PER_LEVEL;
+
+    if (timerInterval) clearInterval(timerInterval);
+    $('#timer').text(`⏱️ Залишилось: ${timeLeft} с`);
+
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        $('#timer').text(`⏱️ Залишилось: ${timeLeft} с`);
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            alert('Час вичерпано! Почнемо спочатку?');
+            level = startLevel;
+            newGame(level);
+        }
+    }, 1000);
+}
+
+function drawGameFields(sz) {
+    const field = $('.field');
+    const from = 1;
+    const to = Math.pow(sz, 2);
+    const arr = createArr(from, to);
+    createCells(arr, sz, field);
+}
+
+function newGame(curLevel) {
+    size = startSize + curLevel - 1;
+    drawGameFields(size);
+    $('#level').text('📈 Рівень: ' + curLevel);
+    startLevelTimer(curLevel);
+
+    let counter = 1;
+    $('td').off('click').on('click', function () {
+        if ($(this).text() == counter) {
+            $(this).addClass('active');
+            if (counter === size * size) {
+                clearInterval(timerInterval);
+                setTimeout(() => {
+                    alert('Вітаємо! Переходимо до наступного рівня?');
+                    level++;
+                    newGame(level);
+                }, 100);
+            } else {
+                counter++;
+            }
+        } else {
+            clearInterval(timerInterval);
+            setTimeout(() => {
+                alert('Упс! Помилка!\nПочнемо спочатку?');
+                level = startLevel;
+                newGame(level);
+            }, 100);
+        }
+    });
+}
+$(document).ready(() => {
+    newGame(level);
+});
+</script>
+</html>
