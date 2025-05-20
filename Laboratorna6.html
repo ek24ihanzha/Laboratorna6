@@ -10,10 +10,10 @@
 <body>
   <div id="stats" class="d-flex justify-content-center align-items-center gap-4 mb-4">
     <div id="timer" class="badge bg-warning text-dark fs-5 p-3 shadow-sm">
-      ⏱️ Залишилось: 00:30
+      Залишилось: 00:01
     </div>
     <div id="level" class="badge bg-success text-white fs-5 p-3 shadow-sm">
-      📈 Рівень: 1
+      Рівень: 12314
     </div>
   </div>
   <div id="game" class="d-flex justify-content-center align-items-center gap-4 mb-4">
@@ -74,11 +74,11 @@ function startLevelTimer(curLevel) {
     timeLeft = BASE_LEVEL_TIME + (curLevel - 1) * EXTRA_TIME_PER_LEVEL;
 
     if (timerInterval) clearInterval(timerInterval);
-    $('#timer').text(`⏱️ Залишилось: ${timeLeft} с`);
+    $('#timer').text(`Залишилось: ${timeLeft} с`);
 
     timerInterval = setInterval(() => {
         timeLeft--;
-        $('#timer').text(`⏱️ Залишилось: ${timeLeft} с`);
+        $('#timer').text(`Залишилось: ${timeLeft} с`);
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
             alert('Час вичерпано! Почнемо спочатку?');
@@ -99,7 +99,7 @@ function drawGameFields(sz) {
 function newGame(curLevel) {
     size = startSize + curLevel - 1;
     drawGameFields(size);
-    $('#level').text('📈 Рівень: ' + curLevel);
+    $('#level').text('Рівень: ' + curLevel);
     startLevelTimer(curLevel);
 
     let counter = 1;
